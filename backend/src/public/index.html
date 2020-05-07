@@ -1,0 +1,65 @@
+<!-- ./client/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Roulette Client</title>
+  </head>
+  <body>
+    <button onClick="spin()">Spin</button>
+    <button onClick="wild()">Wild</button>
+    <button onClick="blast()">Blast</button>
+    <button onClick="register()">Register</button>
+    <button onClick="login()">Login</button>
+    <button onClick="logout()">Logout</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script>
+      const RouletteServiceEvent = {
+        CONNECT: 'connect',
+        DISCONNECT: 'disconnect',
+        SPIN: 'spin',
+        WILD: 'wild',
+        BLAST: 'blast',
+        REGISTER: 'register',
+        LOGIN: 'login',
+        LOGOUT: 'logout'
+      };
+
+      const socket = io("http://localhost:8080");
+
+      function spin() {
+        console.log('[client] emit:', RouletteServiceEvent.SPIN);
+        const message = {message: RouletteServiceEvent.SPIN};
+        socket.emit(RouletteServiceEvent.SPIN, message);
+      }
+      function wild() {
+        console.log('[client] emit:', RouletteServiceEvent.WILD);
+        socket.emit(RouletteServiceEvent.WILD, RouletteServiceEvent.WILD);
+      }
+      function blast() {
+        console.log('[client] emit:', RouletteServiceEvent.BLAST);
+        socket.emit(RouletteServiceEvent.BLAST, RouletteServiceEvent.BLAST);
+      }
+      function register() {
+        console.log('[client] emit:', RouletteServiceEvent.REGISTER);
+        const message = {name: 'Adi Cohen', email: 'adico1@gmail.com', password: '0123456789' };
+        socket.emit(RouletteServiceEvent.REGISTER, message);
+      }
+      function login() {
+        console.log('[client] emit:', RouletteServiceEvent.LOGIN);
+        const message = {email: 'adico1@gmail.com', password: '0123456789' };
+        socket.emit(RouletteServiceEvent.LOGIN, message);
+      }
+      function logout() {
+        console.log('[client] emit:', RouletteServiceEvent.LOGOUT);
+        socket.emit(RouletteServiceEvent.LOGOUT, null);
+      }
+      socket.on("message", function(data) {
+        console.log('[client] recieved:', data);
+      });
+    </script>
+  </body>
+</html>
