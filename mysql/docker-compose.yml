@@ -1,9 +1,0 @@
-mysql:
-  image: mysql/mysql-server:5.7
-  container_name: rucio-mysql
-  volumes:
-    - ./mysql-config:/configs
-  environment:
-    - MYSQL_ROOT_PASSWORD=pass
-    - MYSQL_ROOT_HOST=%
-  command: ["cp", "-f", "/configs/my-master.cnf", "/etc/my.cnf"]
