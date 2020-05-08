@@ -1,4 +1,13 @@
-# local db setup
+## About
+
+APIs:
+* “spin” - send a message to a random user
+* “wild” -  send a message to X random users. X will be determined by the client.
+* “blast”  - sends a message to all users
+* “register” - simple user registration flow
+* “login” - simple user login flow 
+
+## local db setup
 ```
 docker run -p 3306:3306 --name message-roulette-mysql -e MYSQL_ROOT_PASSWORD=0123456789 -d mysql:5.6.48
 ```
@@ -12,7 +21,7 @@ or with python 3 installed
 docker inspect message-roulette-mysql | python3 -c "import sys, json; print(json.load(sys.stdin)[0]['NetworkSettings']['IPAddress'])"
 ```
 
-# CONFIGURE MYSQL FOR LOG_BIN
+## CONFIGURE MYSQL FOR LOG_BIN
 
 connect mysql docker instance 
 ```
@@ -38,7 +47,7 @@ log_bin          = /var/log/mysql/mysql-bin-log.index
 
 save the file and exit vim
 
-# SETUP BIN_LOG
+## SETUP BIN_LOG
 ```
 chown -R mysql:mysql /var/log/mysql/
 chmod 777 /var/log/mysql/
@@ -63,13 +72,13 @@ mysql -uroot -p0123456789
 select variable_value as "BINARY LOGGING STATUS (log_bin) :: " from information_schema.global_variables where variable_name='log_bin';
 ```
 
-# SETUP DB SCHEMA
+## SETUP DB SCHEMA
 docker run -it --network host --rm mysql:5.6.48 mysql -h172.17.0.2 -uroot -p0123456789
 
 execute the sql statements in the file: 
 /backend/scripts/db-setup.sql 
 
-# START NODE INSTANCE
+## START NODE INSTANCE
 ```
 npm run dev
 ```
@@ -78,10 +87,10 @@ or
 npm run prod
 ```
 
-# TESTING THE APP
+## TESTING THE APP
 open the browser at: http://localhost:8080/
 
 
-## to test live update from mysql client use the following command
+### to test live update from mysql client use the following command
 INSERT INTO roulette_messages (content, recipients) VALUES ('content', "[{n:1,s:'A4uns0-yJg5U1cheAAAA'},{n:2,s:'B4uns0-yJg5U1cheAAAB'},{n:1,s:'C4uns0-yJg5U1cheAAAC'}]");
 
