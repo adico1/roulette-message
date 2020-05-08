@@ -1,4 +1,4 @@
-import { InMessageRequest, NodesRecipients } from "./request";
+import { InMessageRequest } from "./request";
 import { InMessageResponse } from "./response";
 const config = require('../../../config');
 

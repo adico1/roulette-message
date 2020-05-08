@@ -2,7 +2,11 @@ import { SpinRequest } from "./request";
 import { SpinResponse } from "./response";
 import { RouletteMessage } from "../../../core/models/roulette-message";
 import { rouletteMessageRepo, roulettePlayerRepo } from "../../../data/repos";
-import { rouletteMessageModelToEntityMapper, roulettePlayerEntitiesToRecipientsMapper } from "../mappers/mappers.barrel";
+
+import { 
+  rouletteMessageModelToEntityMapper, 
+  roulettePlayerEntitiesToRecipientsMapper 
+} from "../mappers/mappers.barrel";
 
 export class SpinUseCase {
   async exec(request: SpinRequest): Promise<SpinResponse> {
