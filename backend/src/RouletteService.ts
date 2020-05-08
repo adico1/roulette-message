@@ -3,12 +3,13 @@ import * as socketIo from 'socket.io';
 import * as path from 'path';
 
 import { RouletteServiceEvent } from './constants';
-import { WildClientDto, BlastClientDto, LoginClientDto } from './types';
 import { createServer, Server } from 'http';
 import { Routes, ApiRoute } from './api-routes';
-import { SocketView } from './core/view/socket.view';
+import { SocketView } from './core/view/socket.response.view';
 import { connectedSockets } from './ConnectedSockets';
 import { MySqlLive } from './MySqlLive';
+import { SocketMessageView } from './core/view/socket.message.view';
+import { MessagingFactory } from './core/view/MessagingFactory';
 var cors = require('cors');
 const config = require('./config');
 
@@ -42,18 +43,21 @@ export class RouletteService {
       res.sendFile(path.resolve("./src/public/index.html"));
     });
 
-    new MySqlLive().start();
 
     this.server = createServer(this._app);
     this.initSocket();
-    this.listen();
+    const socketView = new SocketView(this.io);
+    const messagingFactory = new MessagingFactory(this.io);
+      
+    new MySqlLive(messagingFactory).start();
+    this.listen(socketView);
   }
 
   private initSocket (): void {
     this.io = socketIo(this.server);
   }
 
-  private listen (): void {
+  private listen (socketView:SocketView): void {
 
     this.server.listen(this.port, () => {
       console.log('Running server on port %s', this.port);
@@ -65,12 +69,11 @@ export class RouletteService {
 
       connectedSockets.add(socket);
       // Load service api routes
-      const socketView = new SocketView(this.io);
       const routes = new Routes(socketView);
 
       console.log(`[server][listen]`, JSON.stringify(config));
 
-      routes.getApiRoutes(socketId, config.nodeId).forEach((route: ApiRoute) => {
+      routes.getApiRoutes(socketId, config.NODE_ID).forEach((route: ApiRoute) => {
         socket.on(route.name, route.fn)
       });
     });

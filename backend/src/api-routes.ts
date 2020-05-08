@@ -3,7 +3,7 @@ import { SpinRequest } from "./modules/roulette-notifier/spin/request";
 import { SpinResponse } from "./modules/roulette-notifier/spin/response";
 import { RouletteServiceEvent } from "./constants";
 import { SpinClientDto, RegisterClientDto, LoginClientDto, LogoutClientDto, BlastClientDto, WildClientDto } from "./types";
-import { IView } from "./core/view/socket.view";
+import { IView } from "./core/view/socket.response.view";
 import { RegisterController } from "./modules/user/register/controller";
 import { RegisterRequest } from "./modules/user/register/request";
 import { RegisterResponse } from "./modules/user/register/response";
