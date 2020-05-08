@@ -20,9 +20,7 @@ CREATE TABLE IF NOT EXISTS roulette_players (
     CONSTRAINT fk_rplayer_users_user_id
     FOREIGN KEY (user_id) 
         REFERENCES users(user_id),
-    UNIQUE INDEX ix_rplayer_user_node_socket (user_id, node_id, socket_id),
-    INDEX ix_rplayer_node_socket (node_id, socket_id),
-    INDEX ix_rplayer_socket (socket_id)
+    UNIQUE INDEX ix_rplayer_user_node_socket (user_id, node_id, socket_id)
 )  ENGINE=INNODB;
 
 
