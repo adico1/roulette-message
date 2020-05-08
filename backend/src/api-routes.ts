@@ -2,8 +2,8 @@ import { SpinController } from "./modules/roulette-notifier/spin/controller";
 import { SpinRequest } from "./modules/roulette-notifier/spin/request";
 import { SpinResponse } from "./modules/roulette-notifier/spin/response";
 import { RouletteServiceEvent } from "./constants";
-import { SpinClientDto, RegisterClientDto, LoginClientDto, LogoutClientDto } from "./types";
-import { IView } from "./core/view/socket.view";
+import { SpinClientDto, RegisterClientDto, LoginClientDto, LogoutClientDto, BlastClientDto, WildClientDto } from "./types";
+import { IView } from "./core/view/socket.response.view";
 import { RegisterController } from "./modules/user/register/controller";
 import { RegisterRequest } from "./modules/user/register/request";
 import { RegisterResponse } from "./modules/user/register/response";
@@ -19,6 +19,15 @@ import { LogoutUseCase } from "./modules/user/logout/usecase";
 import { LogoutRequest } from "./modules/user/logout/request";
 import { LogoutResponse } from "./modules/user/logout/response";
 import { connectedSockets } from './ConnectedSockets';
+import { BlastController } from "./modules/roulette-notifier/blast/controller";
+import { BlastRequest } from "./modules/roulette-notifier/blast/request";
+import { BlastResponse } from "./modules/roulette-notifier/blast/response";
+import { BlastUseCase } from "./modules/roulette-notifier/blast/usecase";
+import { SpinUseCase } from "./modules/roulette-notifier/spin/usecase";
+import { WildController } from "./modules/roulette-notifier/wild/controller";
+import { WildUseCase } from "./modules/roulette-notifier/wild/usecase";
+import { WildRequest } from "./modules/roulette-notifier/wild/request";
+import { WildResponse } from "./modules/roulette-notifier/wild/response";
 
 
 export class ApiRoute {
@@ -45,10 +54,54 @@ export class Routes {
           return;
         }
         
-        const spinController = new SpinController();
+        const spinController = new SpinController(new SpinUseCase());
         const spinRequest = m as SpinRequest;
 
         spinController.exec(spinRequest).then((response: SpinResponse) => {
+          this.view.render(response);
+        });
+      }
+    }
+  }
+
+  // send a message to a random user
+  prepWildRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
+    return {
+      name: eventName,
+      fn: (m: WildClientDto) => {
+        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
+  
+        if (!connectedSockets.isLoggedIn(socketId)) {
+          this.view.render({status: 401, message: 'Authorization Error'});
+          return;
+        }
+        
+        const wildController = new WildController(new WildUseCase());
+        const wildRequest = m as WildRequest;
+
+        wildController.exec(wildRequest).then((response: WildResponse) => {
+          this.view.render(response);
+        });
+      }
+    }
+  }
+
+  // send a message to a random user
+  prepBlastRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
+    return {
+      name: eventName,
+      fn: (m: BlastClientDto) => {
+        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
+  
+        if (!connectedSockets.isLoggedIn(socketId)) {
+          this.view.render({status: 401, message: 'Authorization Error'});
+          return;
+        }
+        
+        const blastController = new BlastController(new BlastUseCase());
+        const blastRequest = m as BlastRequest;
+
+        blastController.exec(blastRequest).then((response: BlastResponse) => {
           this.view.render(response);
         });
       }
@@ -84,7 +137,7 @@ export class Routes {
     return {
       name: eventName,
       fn: (m: LoginClientDto) => {
-        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
+        console.log(`[api](${eventName}): %s %s`, JSON.stringify(m), socketId);
   
         const loginController = 
           new LoginController(
@@ -165,6 +218,8 @@ export class Routes {
   getApiRoutes(socketId: string, nodeId: number): ApiRoute[] {
     return [
       this.prepSpinRoute(RouletteServiceEvent.SPIN, socketId, nodeId),
+      this.prepWildRoute(RouletteServiceEvent.WILD, socketId, nodeId),
+      this.prepBlastRoute(RouletteServiceEvent.BLAST, socketId, nodeId),
       this.prepRegisterRoute(RouletteServiceEvent.REGISTER),
       this.prepLoginRoute(RouletteServiceEvent.LOGIN, socketId, nodeId),
       this.prepLogoutRoute(RouletteServiceEvent.LOGOUT, socketId, nodeId),

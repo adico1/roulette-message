@@ -9,7 +9,7 @@ export interface BlastClientDto extends IMessage {
 }
 
 export interface WildClientDto extends IMessage {
-  number_of_random_users: number;
+  x: number;
 }
 
 export interface LoginClientDto {

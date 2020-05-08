@@ -9,7 +9,7 @@ export class SocketView implements IView {
   }
 
   render(response: any): void {
-    console.log(`[server][SocketView]render:`, JSON.stringify(response));
+    console.log(`[server][SocketView][api_response]:`, JSON.stringify(response));
     this.io.emit("message", JSON.stringify(response));
   }
 }

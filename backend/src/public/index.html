@@ -37,11 +37,13 @@
       }
       function wild() {
         console.log('[client] emit:', RouletteServiceEvent.WILD);
-        socket.emit(RouletteServiceEvent.WILD, RouletteServiceEvent.WILD);
+        const message = {message: RouletteServiceEvent.WILD, x: 2}
+        socket.emit(RouletteServiceEvent.WILD, message);
       }
       function blast() {
         console.log('[client] emit:', RouletteServiceEvent.BLAST);
-        socket.emit(RouletteServiceEvent.BLAST, RouletteServiceEvent.BLAST);
+        const message = {message: RouletteServiceEvent.BLAST}
+        socket.emit(RouletteServiceEvent.BLAST, message);
       }
       function register() {
         console.log('[client] emit:', RouletteServiceEvent.REGISTER);

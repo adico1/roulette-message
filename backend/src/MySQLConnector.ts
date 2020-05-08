@@ -1,30 +1,24 @@
 import { Connection, Pool } from "mysql";
 const mysql = require('mysql')
+const config = require('./config');
 
 class MySQLConnector {
     internalPool: Pool;
   
-    //This constant-like getters will be used to connect to MySQL
-    get MYSQL_DB_USER() { return process.env.MYSQL_DB_USER || 'root' }
-    get MYSQL_DB_NAME() { return process.env.MYSQL_DB_NAME || 'roulette_service' }
-    get MYSQL_DB_PASSWORD() { return process.env.MYSQL_DB_PASSWORD || '0123456789' }
-    get MYSQL_DB_ADDRESS() { return process.env.MYSQL_DB_ADDRESS || '0.0.0.0' }
-    get MYSQL_DB_PORT() { return process.env.MYSQL_DB_ADDRESS || 3306 }
-    get MYSQL_DB_POOL_SIZE() { return process.env.MYSQL_DB_POOL_SIZE || 10 }
-
     constructor() {
-      console.log('Connecting to DB');
+      console.log(`Connecting to DB ${config.MYSQL_DB_ADDRESS} ${config.MYSQL_DB_USER} ${config.MYSQL_DB_PASSWORD}`);
         
+
       //Instantiates the connection pool
       this.internalPool = mysql.createPool({
-          host: this.MYSQL_DB_ADDRESS,
-          user: this.MYSQL_DB_USER,
-          database: this.MYSQL_DB_NAME,
-          password: this.MYSQL_DB_PASSWORD,
-          connectionLimit: this.MYSQL_DB_POOL_SIZE,
+          host: config.MYSQL_DB_ADDRESS,
+          user: config.MYSQL_DB_USER,
+          database: config.MYSQL_DB_NAME,
+          password: config.MYSQL_DB_PASSWORD,
+          connectionLimit: config.MYSQL_DB_POOL_SIZE,
           waitForConnections: true,
           queueLimit: 100,
-          port : this.MYSQL_DB_PORT,
+          port : config.MYSQL_DB_PORT,
           connectTimeout : 10000,
           acquireTimeout: 10000,
           debug : false          
