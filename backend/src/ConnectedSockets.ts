@@ -17,8 +17,8 @@ class ConnectedSockets {
     delete this.connectedSockets[socket.id];
   }
 
-  login(socket: any, userId: number) {
-    this.connectedSockets[socket.id].userId = userId;
+  login(socketId: string, userId: number) {
+    this.connectedSockets[socketId].userId = userId;
   }
 
   isLoggedIn(socketId: string) {

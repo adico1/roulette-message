@@ -3,6 +3,6 @@ import {RoulettePlayerEntity} from '../../../data/models/roulette-player.entity'
 
 export class RoulettePlayerModelToEntityMapper {
   map(user: RoulettePlayer): RoulettePlayerEntity {
-    return user as RoulettePlayerEntity;
+    return RoulettePlayerEntity.create(user.userId, user.nodeId, user.socketId);
   }
 }

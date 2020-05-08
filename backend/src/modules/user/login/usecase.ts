@@ -16,14 +16,13 @@ export class LoginUseCase {
     }
 
     request.userId = user.userId;
-    const cs = connectedSockets.get(request.socketId);
-    cs.userId = user.userId;
+    connectedSockets.login(request.socketId, request.userId);
 
-    console.log(`[server][LoginUseCase][exec]`, JSON.stringify(user));
     const roulettePlayer = 
       RoulettePlayer.create(user, request.nodeId, request.socketId);
     
-    const roulettePlayerEntity = roulettePlayerModelToEntityMapper.map(roulettePlayer);
+      const roulettePlayerEntity = roulettePlayerModelToEntityMapper.map(roulettePlayer);
+      console.log(`[server][LoginUseCase][exec]`, JSON.stringify(roulettePlayerEntity));
     return (await roulettePlayerRepo.save(roulettePlayerEntity)) as LoginResponse;
   }
 }

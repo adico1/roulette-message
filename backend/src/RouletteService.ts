@@ -8,6 +8,7 @@ import { createServer, Server } from 'http';
 import { Routes, ApiRoute } from './api-routes';
 import { SocketView } from './core/view/socket.view';
 import { connectedSockets } from './ConnectedSockets';
+import { MySqlLive } from './MySqlLive';
 var cors = require('cors');
 const config = require('./config');
 
@@ -41,6 +42,8 @@ export class RouletteService {
       res.sendFile(path.resolve("./src/public/index.html"));
     });
 
+    new MySqlLive().start();
+
     this.server = createServer(this._app);
     this.initSocket();
     this.listen();
@@ -62,7 +65,6 @@ export class RouletteService {
 
       connectedSockets.add(socket);
       // Load service api routes
-      let currentMsg = RouletteServiceEvent.SPIN;
       const socketView = new SocketView(this.io);
       const routes = new Routes(socketView);
 
@@ -70,20 +72,6 @@ export class RouletteService {
 
       routes.getApiRoutes(socketId, config.nodeId).forEach((route: ApiRoute) => {
         socket.on(route.name, route.fn)
-      });
-
-      // send a message to X random users. X will be determined by the client.
-      currentMsg = RouletteServiceEvent.WILD;
-      socket.on(currentMsg, (m: WildClientDto) => {
-        console.log(`[server](${currentMsg}): %s`, JSON.stringify(m));
-        this.io.emit("message", m);
-      });
-
-      // sends a message to all users
-      currentMsg = RouletteServiceEvent.BLAST;
-      socket.on(currentMsg, (m: BlastClientDto) => {
-        console.log(`[server](${currentMsg}): %s`, JSON.stringify(m));
-        this.io.emit("message", m);
       });
     });
   }

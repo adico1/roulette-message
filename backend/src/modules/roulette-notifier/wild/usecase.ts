@@ -1,20 +1,19 @@
-import { SpinRequest } from "./request";
-import { SpinResponse } from "./response";
+import { WildRequest } from "./request";
+import { WildResponse } from "./response";
 import { RouletteMessage } from "../../../core/models/roulette-message";
 import { rouletteMessageRepo, roulettePlayerRepo } from "../../../data/repos";
 import { rouletteMessageModelToEntityMapper, roulettePlayerEntitiesToRecipientsMapper } from "../mappers/mappers.barrel";
 
-export class SpinUseCase {
-  async exec(request: SpinRequest): Promise<SpinResponse> {
-    console.log(`[server][SpinUseCase][exec]`, JSON.stringify(request));
+export class WildUseCase {
+  async exec(request: WildRequest): Promise<WildResponse> {
+    console.log(`[server][WildUseCase][exec]`, JSON.stringify(request));
 
-    const randomRoulettePlayerEntity = await roulettePlayerRepo.getOneRandom();
+    const randomRoulettePlayerEntity = await roulettePlayerRepo.getXRandom(request.x);
     const recipient = roulettePlayerEntitiesToRecipientsMapper.map(randomRoulettePlayerEntity);
-    console.log(`[server][SpinUseCase][exec]`, JSON.stringify(randomRoulettePlayerEntity));
     const rouletteMessage = 
       RouletteMessage.create(request.message, JSON.stringify(recipient));
     
     const rouletteMessageEntity = rouletteMessageModelToEntityMapper.map(rouletteMessage);
-    return (await rouletteMessageRepo.save(rouletteMessageEntity)) as SpinResponse;
+    return (await rouletteMessageRepo.save(rouletteMessageEntity)) as WildResponse;
   }
 }

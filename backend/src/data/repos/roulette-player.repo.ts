@@ -5,7 +5,7 @@ export class RoulettePlayerRepo {
   async save(roulettePlayer: RoulettePlayerEntity) {
     console.log(`[server][RoulettePlayerRepo][save]`, JSON.stringify(roulettePlayer));
     const query = `INSERT INTO roulette_players (user_id, node_id, socket_id) \
-VALUES (${roulettePlayer.userId}, ${roulettePlayer.nodeId}, '${roulettePlayer.socketId}');`;
+VALUES (${roulettePlayer.user_id}, ${roulettePlayer.node_id}, '${roulettePlayer.socket_id}');`;
     console.log('[RoulettePlayerRepo][save] query: ', query);
 
     return await new Db().exec(query);
