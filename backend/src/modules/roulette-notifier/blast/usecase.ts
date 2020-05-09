@@ -11,6 +11,7 @@ export class BlastUseCase {
       RouletteMessage.create(request.message, '*');
     
     const rouletteMessageEntity = rouletteMessageModelToEntityMapper.map(rouletteMessage);
-    return (await rouletteMessageRepo.save(rouletteMessageEntity)) as BlastResponse;
+    await rouletteMessageRepo.save(rouletteMessageEntity);
+    return {status: 200, message: 'OK'} as BlastResponse
   }
 }

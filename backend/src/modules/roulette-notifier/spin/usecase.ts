@@ -19,6 +19,7 @@ export class SpinUseCase {
       RouletteMessage.create(request.message, JSON.stringify(recipient));
     
     const rouletteMessageEntity = rouletteMessageModelToEntityMapper.map(rouletteMessage);
-    return (await rouletteMessageRepo.save(rouletteMessageEntity)) as SpinResponse;
+    await rouletteMessageRepo.save(rouletteMessageEntity);
+    return {status: 200, message: 'OK'} as SpinResponse
   }
 }

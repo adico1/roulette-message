@@ -7,6 +7,12 @@ APIs:
 * “register” - simple user registration flow
 * “login” - simple user login flow 
 
+## API Params Screeshots
+![Register](https://user-images.githubusercontent.com/5412270/81479173-72c4c000-922a-11ea-9c21-5ddcc434baee.png)
+![Login](https://user-images.githubusercontent.com/5412270/81478453-44dd7c80-9226-11ea-9f7a-f487bd7296b6.png)
+![Spin](https://user-images.githubusercontent.com/5412270/81478450-4149f580-9226-11ea-87b8-4a0d3e23a865.png)
+![Wild](https://user-images.githubusercontent.com/5412270/81478452-43ac4f80-9226-11ea-878b-9d614349347b.png)
+
 ## local db setup
 ```
 docker run -p 3306:3306 --name message-roulette-mysql -e MYSQL_ROOT_PASSWORD=0123456789 -d mysql:5.6.48

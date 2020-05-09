@@ -27,7 +27,11 @@ export class Route implements IRoute {
   argumentToDtoMapper<T>(s_m: string|T): T {
     let m: T;
     if (typeof s_m === 'string') {
-      m = JSON.parse(s_m) as T;
+      try{
+        m = JSON.parse(s_m) as T;
+      } catch(err) {
+        throw err;
+      }
     } else {
       m = s_m as T;
     }
@@ -37,9 +41,13 @@ export class Route implements IRoute {
   execute<REQ extends IRequest, RES extends IResponse>(controller: IController, request: REQ) {
     console.log(`[server][api-routes][execute]`, JSON.stringify(request));
     controller.exec(request).then((response: RES) => {
-      this.view.render(response);
+      this.view.render({status: 200, message: 'OK'});
     }).catch( (err: any) => {
-      this.view.render(err);
+      if(err.code && err.code === 'ER_DUP_ENTRY'){
+        this.view.render({status: 409, message: 'Already Exists'});
+      } else {
+        this.view.render({status:501, message: 'Unexpected Error'});
+      }
     });
   }
 }
