@@ -10,7 +10,11 @@ export class RegisterUseCase {
     this.userRepo = userRepo;
   }
   async exec(request: RegisterRequest): Promise<RegisterResponse> {
-    const user = request as UserEntity;
+    const user = {
+      name: request.name, 
+      email: request.email, 
+      password: request.password
+    } as UserEntity;
     
     return (await this.userRepo.save(user)) as RegisterResponse;
   }
