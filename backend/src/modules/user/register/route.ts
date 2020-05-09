@@ -6,11 +6,11 @@ import { RegisterResponse } from "./response";
 import { registerController } from "./logic.barrel";
 
 export class RegisterRoute extends Route {
-  // send a message to a random user
+  // register user
   prepRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
     return {
       name: eventName,
-      fn: (s_m: RegisterClientDto) => {
+      fn: (s_m: string|RegisterClientDto) => {
         console.log(`[api](${eventName}): %s`, JSON.stringify(s_m));
 
         let m: RegisterClientDto = this.argumentToDtoMapper<RegisterClientDto>(s_m);

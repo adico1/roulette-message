@@ -70,7 +70,7 @@ export class RouletteService {
       // Load service api routes
       const routes = new Routes(socketView);
 
-      console.log(`[server][listen]`, JSON.stringify(config));
+      console.log(`[server][listen]`, config.NODE_ID);
 
       routes.getApiRoutes(socketId, config.NODE_ID).forEach((route: ApiRoute) => {
         socket.on(route.name, route.fn)

@@ -28,6 +28,7 @@ export class Routes {
       new WildRoute(this.view).prepRoute(RouletteServiceEvent.WILD, socketId, nodeId),
       // broadcast a message to all users
       new BlastRoute(this.view).prepRoute(RouletteServiceEvent.BLAST, socketId, nodeId),
+      // registration flow
       new RegisterRoute(this.view).prepRoute(RouletteServiceEvent.REGISTER, socketId, nodeId),
       // user login flow
       new LoginRoute(this.view).prepRoute(RouletteServiceEvent.LOGIN, socketId, nodeId),

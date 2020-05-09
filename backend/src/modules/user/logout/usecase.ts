@@ -14,6 +14,6 @@ export class LogoutUseCase {
     
     connectedSockets.logout(cs.socketId);
 
-    return res as LogoutResponse;
+    return {status: 200, message: 'OK'} as LogoutResponse;
   }
 }

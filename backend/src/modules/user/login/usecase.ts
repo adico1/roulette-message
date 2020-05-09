@@ -23,6 +23,7 @@ export class LoginUseCase {
     
       const roulettePlayerEntity = roulettePlayerModelToEntityMapper.map(roulettePlayer);
       console.log(`[server][LoginUseCase][exec]`, JSON.stringify(roulettePlayerEntity));
-    return (await roulettePlayerRepo.save(roulettePlayerEntity)) as LoginResponse;
+    await roulettePlayerRepo.save(roulettePlayerEntity);
+    return {status: 200, message: 'OK'} as LoginResponse;
   }
 }
