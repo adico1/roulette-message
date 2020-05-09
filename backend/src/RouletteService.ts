@@ -8,7 +8,6 @@ import { Routes, ApiRoute } from './api-routes';
 import { SocketView } from './core/view/socket.response.view';
 import { connectedSockets } from './ConnectedSockets';
 import { MySqlLive } from './MySqlLive';
-import { SocketMessageView } from './core/view/socket.message.view';
 import { MessagingFactory } from './core/view/MessagingFactory';
 var cors = require('cors');
 const config = require('./config');
