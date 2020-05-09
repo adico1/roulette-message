@@ -1,21 +1,13 @@
-import { SpinController } from "./modules/roulette-notifier/spin/controller";
 import { SpinRequest } from "./modules/roulette-notifier/spin/request";
 import { SpinResponse } from "./modules/roulette-notifier/spin/response";
 import { RouletteServiceEvent } from "./constants";
 import { SpinClientDto, RegisterClientDto, LoginClientDto, LogoutClientDto, BlastClientDto, WildClientDto } from "./types";
 import { IView } from "./core/view/socket.response.view";
-import { RegisterController } from "./modules/user/register/controller";
 import { RegisterRequest } from "./modules/user/register/request";
 import { RegisterResponse } from "./modules/user/register/response";
-import { RegisterUseCase } from "./modules/user/register/usecase";
-import { UserRepo } from "./data/repos/user.repo";
-import { LoginController } from "./modules/user/login/controller";
-import { LoginUseCase } from "./modules/user/login/usecase";
 import { LoginRequest } from "./modules/user/login/request";
 import { LoginResponse } from "./modules/user/login/response";
 
-import { LogoutController } from "./modules/user/logout/controller";
-import { LogoutUseCase } from "./modules/user/logout/usecase";
 import { LogoutRequest } from "./modules/user/logout/request";
 import { LogoutResponse } from "./modules/user/logout/response";
 import { connectedSockets } from './ConnectedSockets';
@@ -23,11 +15,17 @@ import { BlastController } from "./modules/roulette-notifier/blast/controller";
 import { BlastRequest } from "./modules/roulette-notifier/blast/request";
 import { BlastResponse } from "./modules/roulette-notifier/blast/response";
 import { BlastUseCase } from "./modules/roulette-notifier/blast/usecase";
-import { SpinUseCase } from "./modules/roulette-notifier/spin/usecase";
-import { WildController } from "./modules/roulette-notifier/wild/controller";
-import { WildUseCase } from "./modules/roulette-notifier/wild/usecase";
 import { WildRequest } from "./modules/roulette-notifier/wild/request";
 import { WildResponse } from "./modules/roulette-notifier/wild/response";
+import { loginController } from "./modules/user/login/logic.barrel";
+import { IController } from "./core/abstract/controller.interface";
+import { IRequest } from "./core/abstract/request.interface";
+import { IResponse } from "./core/abstract/response.interface";
+import { logoutController } from "./modules/user/logout/logic.barrel";
+import { registerController } from "./modules/user/register/logic.barrel";
+import { spinController } from "./modules/roulette-notifier/spin/logic.barrel";
+import { wildController } from "./modules/roulette-notifier/wild/logic.barrel";
+import { blastController } from "./modules/roulette-notifier/blast/logic.barrel";
 
 
 export class ApiRoute {
@@ -42,24 +40,48 @@ export class Routes {
     this.view = view;
   }
 
+  notAuthorized(socketId:string) {
+    if (!connectedSockets.isLoggedIn(socketId)) {
+      this.view.render({status: 401, message: 'Authorization Error'});
+      return true;
+    }
+    return false;
+  }
+
+  argumentToDtoMapper<T>(s_m: string|T): T {
+    let m: T;
+    if (typeof s_m === 'string') {
+      m = JSON.parse(s_m) as T;
+    } else {
+      m = s_m as T;
+    }
+    return m;
+  }
+
+  execute<REQ extends IRequest, RES extends IResponse>(controller: IController, request: REQ) {
+    console.log(`[server][api-routes][execute]`, JSON.stringify(request));
+    controller.exec(request).then((response: RES) => {
+      this.view.render(response);
+    }).catch( (err: any) => {
+      this.view.render(err);
+    });
+  }
+  
   // send a message to a random user
   prepSpinRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
     return {
       name: eventName,
-      fn: (m: SpinClientDto) => {
-        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
+      fn: (s_m: SpinClientDto) => {
+        console.log(`[api](${eventName}): %s`, JSON.stringify(s_m));
   
-        if (!connectedSockets.isLoggedIn(socketId)) {
-          this.view.render({status: 401, message: 'Authorization Error'});
+        if (this.notAuthorized(socketId)) {
           return;
         }
         
-        const spinController = new SpinController(new SpinUseCase());
+        let m: SpinClientDto = this.argumentToDtoMapper<SpinClientDto>(s_m);
         const spinRequest = m as SpinRequest;
 
-        spinController.exec(spinRequest).then((response: SpinResponse) => {
-          this.view.render(response);
-        });
+        this.execute<SpinRequest, SpinResponse>(spinController, spinRequest)
       }
     }
   }
@@ -68,20 +90,17 @@ export class Routes {
   prepWildRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
     return {
       name: eventName,
-      fn: (m: WildClientDto) => {
-        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
+      fn: (s_m: WildClientDto) => {
+        console.log(`[api](${eventName}): %s`, JSON.stringify(s_m));
   
-        if (!connectedSockets.isLoggedIn(socketId)) {
-          this.view.render({status: 401, message: 'Authorization Error'});
+        if (this.notAuthorized(socketId)) {
           return;
         }
         
-        const wildController = new WildController(new WildUseCase());
+        let m: SpinClientDto = this.argumentToDtoMapper<SpinClientDto>(s_m);
         const wildRequest = m as WildRequest;
 
-        wildController.exec(wildRequest).then((response: WildResponse) => {
-          this.view.render(response);
-        });
+        this.execute<WildRequest, WildResponse>(wildController, wildRequest)
       }
     }
   }
@@ -90,20 +109,17 @@ export class Routes {
   prepBlastRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
     return {
       name: eventName,
-      fn: (m: BlastClientDto) => {
-        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
+      fn: (s_m: BlastClientDto) => {
+        console.log(`[api](${eventName}): %s`, JSON.stringify(s_m));
   
-        if (!connectedSockets.isLoggedIn(socketId)) {
-          this.view.render({status: 401, message: 'Authorization Error'});
+        if (this.notAuthorized(socketId)) {
           return;
         }
         
-        const blastController = new BlastController(new BlastUseCase());
+        let m: BlastClientDto = this.argumentToDtoMapper<BlastClientDto>(s_m);
         const blastRequest = m as BlastRequest;
 
-        blastController.exec(blastRequest).then((response: BlastResponse) => {
-          this.view.render(response);
-        });
+        this.execute<BlastRequest, BlastResponse>(blastController, blastRequest)
       }
     }
   }
@@ -112,22 +128,13 @@ export class Routes {
   prepRegisterRoute(eventName: string): ApiRoute {
     return {
       name: eventName,
-      fn: (m: RegisterClientDto) => {
-        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
-  
-        const registerController = 
-          new RegisterController(
-            new RegisterUseCase( 
-              new UserRepo() 
-        ));
+      fn: (s_m: RegisterClientDto) => {
+        console.log(`[api](${eventName}): %s`, JSON.stringify(s_m));
 
+        let m: RegisterClientDto = this.argumentToDtoMapper<RegisterClientDto>(s_m);
         const registerRequest = m as RegisterRequest;
 
-        registerController.exec(registerRequest).then((response: RegisterResponse) => {
-          this.view.render(response);
-        }).catch( err => {
-          this.view.render(err);
-        });
+        this.execute<RegisterRequest, RegisterResponse>(registerController, registerRequest)
       }
     }
   }
@@ -136,12 +143,10 @@ export class Routes {
   prepLoginRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
     return {
       name: eventName,
-      fn: (m: LoginClientDto) => {
-        console.log(`[api](${eventName}): %s %s`, JSON.stringify(m), socketId);
-  
-        const loginController = 
-          new LoginController(
-            new LoginUseCase());
+      fn: (s_m: string|LoginClientDto) => {
+        console.log(`[api](${eventName}): %s %s`, JSON.stringify(s_m), socketId);
+        
+        let m: LoginClientDto = this.argumentToDtoMapper<LoginClientDto>(s_m);
 
         const loginRequest = {
           ...m,
@@ -149,12 +154,7 @@ export class Routes {
           nodeId: nodeId
         } as LoginRequest;
 
-        console.log(`[server][prepLoginRoute]`, JSON.stringify(loginRequest));
-        loginController.exec(loginRequest).then((response: LoginResponse) => {
-          this.view.render(response);
-        }).catch( err => {
-          this.view.render(err);
-        });
+        this.execute<LoginRequest, LoginResponse>(loginController, loginRequest)
       }
     }
   }
@@ -163,25 +163,18 @@ export class Routes {
   prepLogoutRoute(eventName: string, socketId: string, nodeId: number): ApiRoute {
     return {
       name: eventName,
-      fn: (m: LogoutClientDto) => {
-        console.log(`[api](${eventName}): %s`, JSON.stringify(m));
+      fn: (s_m: string|LogoutClientDto) => {
+        console.log(`[api](${eventName}): %s`, JSON.stringify(s_m));
   
-        const logoutController = 
-          new LogoutController(
-            new LogoutUseCase());
-
+        let m: LogoutClientDto = this.argumentToDtoMapper<LogoutClientDto>(s_m);
+        
         const logoutRequest = {
           ...m,
           socketId: socketId,
           nodeId: nodeId
         } as LogoutRequest;
 
-        console.log(`[server][prepLogoutRoute]`, JSON.stringify(logoutRequest));
-        logoutController.exec(logoutRequest).then((response: LogoutResponse) => {
-          this.view.render(response);
-        }).catch( err => {
-          this.view.render(err);
-        });
+        this.execute<LogoutRequest, LogoutResponse>(logoutController, logoutRequest)
       }
     }
   }
@@ -193,24 +186,17 @@ export class Routes {
       fn: (m: LogoutClientDto) => {
         console.log(`[api](${eventName}): %s`, JSON.stringify(m));
   
-        if( connectedSockets.isLoggedIn(socketId) ) {
-          const logoutController = 
-          new LogoutController(
-            new LogoutUseCase());
-
-          const logoutRequest = {
-            ...m,
-            socketId: socketId,
-            nodeId: nodeId
-          } as LogoutRequest;
-
-          console.log(`[server][prepLogoutRoute]`, JSON.stringify(logoutRequest));
-          logoutController.exec(logoutRequest).then((response: LogoutResponse) => {
-            this.view.render(response);
-          }).catch( err => {
-            this.view.render(err);
-          });
+        if( !connectedSockets.isLoggedIn(socketId) ) {
+          return;
         }
+
+        const logoutRequest = {
+          ...m,
+          socketId: socketId,
+          nodeId: nodeId
+        } as LogoutRequest;
+
+        this.execute<LogoutRequest, LogoutResponse>(logoutController, logoutRequest)
       }
     }
   }

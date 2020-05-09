@@ -32,8 +32,8 @@
 
       function spin() {
         console.log('[client] emit:', RouletteServiceEvent.SPIN);
-        const message = {message: RouletteServiceEvent.SPIN};
-        socket.emit(RouletteServiceEvent.SPIN, message);
+        const message = JSON.stringify({message: RouletteServiceEvent.SPIN});
+        socket.emit(RouletteServiceEvent.SPIN, `${message}`);
       }
       function wild() {
         console.log('[client] emit:', RouletteServiceEvent.WILD);
@@ -52,8 +52,8 @@
       }
       function login() {
         console.log('[client] emit:', RouletteServiceEvent.LOGIN);
-        const message = {email: 'adico1@gmail.com', password: '0123456789' };
-        socket.emit(RouletteServiceEvent.LOGIN, message);
+        const message = JSON.stringify({email: 'adico1@gmail.com', password: '0123456789' });
+        socket.emit(RouletteServiceEvent.LOGIN, `${message}`);
       }
       function logout() {
         console.log('[client] emit:', RouletteServiceEvent.LOGOUT);
