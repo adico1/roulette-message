@@ -12,6 +12,10 @@ export class Route implements IRoute {
     this.view = view;
   }
   
+  prepRoute(eventName: string, socketId: string, nodeId: number): import("../../api-routes").ApiRoute {
+    throw new Error("Method not implemented.");
+  }
+  
   notAuthorized(socketId:string) {
     if (!connectedSockets.isLoggedIn(socketId)) {
       this.view.render({status: 401, message: 'Authorization Error'});
